@@ -1,0 +1,37 @@
+#mongo-app {
+    display: flex;
+    flex-direction: column;
+    font-family: 'Calibri Regular', 'Calibri';
+    font-size: 16px;
+}
+#top-side-menu {
+    width: 100%;
+}
+#mongo-app h3 {
+    font-weight: 500;
+    line-height: 1.42857143;
+}
+.f-display {
+    display: flex;
+}
+.f-wrap {
+    flex-wrap: wrap;
+}
+.f-space-between {
+    justify-content: space-between;
+}
+.f-content-end {
+    justify-content: flex-end;
+}
+.f-baseline {
+    align-items: baseline;
+}
+.f-direction-column {
+    flex-direction: column;
+}
+.margin-right {
+    margin-right: 10px;
+}
+.margin-bottom {
+    margin-bottom: 10px;
+}

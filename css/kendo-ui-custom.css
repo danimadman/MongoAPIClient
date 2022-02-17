@@ -1,0 +1,70 @@
+.k-treeview {
+    padding-top: 10px;
+    white-space: normal !important;
+}
+.weight-normal {
+    font-weight: normal;
+}
+div.k-notification-wrap {
+    background: #355480;
+    color: #fff;
+}
+.k-notification-error {
+    border-color: #f5c6cb;
+    color: #721c24;
+    background-color: #f8d7da;
+}
+.k-notification-success {
+    border-color: #c3e6cb;
+    color: #155724;
+    background-color: #d4edda;
+}
+.noty-error,
+.noty-success {
+    width: 500px;
+    /*height: 100px;*/
+}
+.k-notification {
+    white-space: normal;
+}
+.k-notification p {
+    margin-left: 80px;
+}
+.k-notification h3 {
+    padding: 15px 10px 0;
+    font-size: 1em;
+    line-height: normal;
+    font-weight: bold;
+}
+.k-notification img {
+    margin: 20px;
+    float: left;
+}
+.k-dropdown-wrap >span.k-select, .k-picker-wrap > span.k-select{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.k-input{
+    background-color: #fff;
+}
+.k-input[readonly], .k-dropdown[aria-readonly=true] > .k-dropdown-wrap{
+    background-color: #f6f6f6;
+}
+.k-dropdown[aria-readonly=true] > .k-dropdown-wrap > .k-input{
+    background-color: #f6f6f6;
+    color: #959595;
+}
+.k-icon.k-i-check.k-i-checkmark {
+    cursor: pointer;
+}
+div[role="alertdialog"] {
+    top: calc(50% - 96px) !important;
+}
+.btn-primary, .btn-primary:hover, .btn-primary:focus, .btn-primary:active{
+    background-color: #e65b5a !important;
+    border-color: transparent;
+}
+.btn-secondary, .btn-secondary:hover, .btn-secondary:focus, .btn-secondary:active{
+    background-color: #dbdbdb !important;
+}
