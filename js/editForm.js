@@ -18,7 +18,7 @@ async function loadEditForm(editFormName) {
 
     let comfortLevelList = await MongoApi.getDictComfortLevel();
 
-    let grid = $("#hostel-room-list").kendoGrid({
+    $("#hostel-room-list").kendoGrid({
         width: "100%",
         pageable: {
             pageSizes: [25, 50, 100, 250, 500, 1000, 2000, "all"]
@@ -27,17 +27,7 @@ async function loadEditForm(editFormName) {
         scrollable: false,
         filterable: true,
         editable: true,
-        schema: {
-            model: {
-                id: "id",
-                fields: {
-                    "number": { type: "number", editable: true, validation: {  min: 0 } },
-                    "seats": { type: "number", editable: true, validation: { min: 0 } },
-                    "cost": { type: "decimal", editable: true, validation: {  min: 0 } },
-                    "comfortLevel": { editable: false }
-                }
-            }
-        },
+        groupable: true,
         toolbar: ["create", "save", "cancel"],
         columns: [{
                 field: "number",
@@ -73,30 +63,47 @@ async function loadEditForm(editFormName) {
             { command: [{
                     text: "Удалить",
                     title: "",
-                    attributes: {
-                        style: "text-align: center;"
-                    },
-                    click: async function(e) {
+                    attributes: { style: "text-align: center;" },
+                    click: function(e) {
                         e.preventDefault();
-                        if (!confirm("Вы действительно хотите удалить эту запись?"))
-                            return;
+                        /*if (!confirm("Вы действительно хотите удалить эту запись?"))
+                            return;*/
                         let tr = $(e.target).closest("tr");
                         let data = this.dataItem(tr);
-                        await MongoApi.deleteHotelRoom(data.id);
-                        let grid = $("#hostel-room-list").data("kendoGrid");
-                        grid.removeRow(tr);
+                        if (data.id != null)
+                            (async () => {
+                                let res = await MongoApi.deleteHotelRoom(data.id);
+                                if (typeof(res) == 'string') {
+                                    showApiNotification('Не удалось удалить запись', 'Удаление', notificationEnum.error);
+                                    return;
+                                }
+                                await loadGrid();
+                            })()
+                        else {
+                            let grid = $("#hostel-room-list").data("kendoGrid");
+                            grid.removeRow(tr);
+                        }
                     }
-                }]
+                }],
+                width: 100
             }
         ],
         saveChanges: function(e) {
             let grid = $("#hostel-room-list").data("kendoGrid");
             let currentData = grid.dataSource.data();
-            for (let i = 0; i < currentData.length; i++) {
-                if(currentData[i].dirty) {
-                    console.log(currentData[i].id);
+            (async () => {
+                for (let i = 0; i < currentData.length; i++) {
+                    if(currentData[i].dirty) {
+                        let res = currentData[i].id === null
+                            ? await MongoApi.postHotelRoom(currentData[i])
+                            : await MongoApi.putHotelRoom(currentData[i]);
+                        if (typeof(res) == 'string') {
+                            showApiNotification(res, 'Сохранение', notificationEnum.error);
+                        }
+                    }
                 }
-            }
+                await loadGrid();
+            })();
         },
         dataBound: function(e) {
             let grid = e.sender;
@@ -104,6 +111,10 @@ async function loadEditForm(editFormName) {
 
             items.each(function(e) {
                 let dataItem = grid.dataItem(this);
+
+                if (dataItem.comfortLevel == 0)
+                    dataItem.comfortLevel = dictComfortLevel.Usual;
+
                 let ddt = $(this).find(".comfort-level-list");
                 $(ddt).kendoDropDownList({
                     value: dataItem.comfortLevel,
@@ -116,20 +127,37 @@ async function loadEditForm(editFormName) {
                         let grid = $("#hostel-room-list").data("kendoGrid");
                         let dataItem = grid.dataItem(row);
 
-                        dataItem.set("comfortLevel", e.sender.value());
+                        dataItem.comfortLevel = e.sender.value();
+                        //dataItem.set("comfortLevel", e.sender.value());
                     }
                 });
             });
         }
     }).data("kendoGrid");
 
-    let dataGrid = await MongoApi.getHotelRooms();
-    if (dataGrid === undefined)
-        return;
+    await loadGrid();
 
-    grid.setDataSource(new kendo.data.DataSource({
-        data: dataGrid,
-        pageSize: 25,
-        batch: true
-    }));
+    async function loadGrid() {
+        let dataGrid = await MongoApi.getHotelRooms();
+        if (dataGrid === undefined)
+            return;
+
+        $("#hostel-room-list").data("kendoGrid").setDataSource(new kendo.data.DataSource({
+            data: dataGrid,
+            pageSize: 25,
+            batch: true,
+            schema: {
+                model: {
+                    id: "id",
+                    fields: {
+                        id: { editable: false, nullable: true },
+                        number: { type: "number", editable: true, validation: { required: { message: "Обязательно к заполнению" }, min: 0 } },
+                        seats: { type: "number", editable: true, validation: { required: { message: "Обязательно к заполнению" }, min: 0 } },
+                        cost: { type: "number", editable: true, validation: { required: { message: "Обязательно к заполнению" }, min: 0 }, format: "{0:c}" },
+                        comfortLevel: { type: "number", editable: false, validation: { required: { message: "Обязательно к заполнению" }, min: 1 } }
+                    }
+                }
+            }
+        }));
+    }
 }

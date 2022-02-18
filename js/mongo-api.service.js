@@ -1,11 +1,11 @@
 var baseUrl = '';
-/*var token = {
+var token = {
     "accessToken": "",
     "refreshToken": "",
     "expiresIn": 0,
     "login": "",
     "expiresDateTime": {}
-};*/
+};
 var MongoApi = {
     init: function (url) {
         baseUrl = url;
@@ -70,6 +70,9 @@ var MongoApi = {
             return await this.apiCallback('GET', `Hotel/Get`, null, 0);
         }
         catch (e) {
+            if (e.status == 200)
+                return true;
+
             console.log('Error: ', e);
             return e.responseJSON;
         }
@@ -79,6 +82,9 @@ var MongoApi = {
             return await this.apiCallback('GET', `Dict/GetDictComfortLevel`, null, 0);
         }
         catch (e) {
+            if (e.status == 200)
+                return true;
+
             console.log('Error: ', e);
             return e.responseJSON;
         }
@@ -88,8 +94,11 @@ var MongoApi = {
             return await this.apiCallback('DELETE', `Hotel/Delete/${id}`, null, 0);
         }
         catch (e) {
+            if (e.status == 200)
+                return true;
+
             console.log('Error: ', e);
-            return e.responseJSON;
+            return e.responseJSON.message;
         }
     },
     postHotelRoom: async function(data) {
@@ -97,8 +106,11 @@ var MongoApi = {
             return await this.apiCallback('POST', `Hotel/Post`, data, 0);
         }
         catch (e) {
+            if (e.status == 200)
+                return true;
+
             console.log('Error: ', e);
-            return e.responseJSON;
+            return e.responseJSON.message;
         }
     },
     putHotelRoom: async function(data) {
@@ -106,139 +118,18 @@ var MongoApi = {
             return await this.apiCallback('PUT', `Hotel/Update`, data, 0);
         }
         catch (e) {
-            console.log('Error: ', e);
-            return e.responseJSON;
-        }
-    },
+            if (e.status == 200)
+                return true;
 
-
-
-
-    getFacultyList: async function () {
-        try {
-            return await this.apiCallback('GET', `AltSubjects/GetFacultyList`, null, 0);
-        }
-        catch (e) {
             console.log('Error: ', e);
-            return e.responseJSON;
-        }
-    },
-    getAltSubjectsTree: async function (studyYear, facultyId) {
-        try {
-            return await this.apiCallback('GET', `AltSubjects/GetAltSubjectsTree/${dictStudyLevelId}/${dictQualificationId}/${studyYear}/${facultyId}`, null, 1);
-        }
-        catch (e) {
-            console.log('Error: ', e);
-            return e.responseJSON;
-        }
-    },
-    getAltSubjectInfo: async function (bupId, numSemestr, subjectId, altSubjectId) {
-        try {
-            return await this.apiCallback('GET', `AltSubjects/GetAltSubjectInfo/${studyYear}/${bupId}/${numSemestr}/${subjectId}/${altSubjectId}`,
-                null, 1);
-        }
-        catch (e) {
-            console.log('Error: ', e);
-            return e.responseJSON;
-        }
-    },
-    getSignedUpStudents: async function (bupId, numSemestr, subjectId, altSubjectId) {
-        try {
-            return await this.apiCallback('GET', `AltSubjects/GetSignedUpStudents/${studyYear}/${bupId}/${numSemestr}/${subjectId}/${altSubjectId}`,
-                null, 1);
-        }
-        catch (e) {
-            console.log('Error: ', e);
-            return e.responseJSON;
-        }
-    },
-    getUnsignedStudents: async function (bupId, numSemestr, subjectId, altSubjectId, spnId) {
-        try {
-            return await this.apiCallback('GET', `AltSubjects/GetUnsignedStudents/${bupId}/${numSemestr}/${subjectId}/${altSubjectId}/${spnId}/${studyYear}/${facultyId}/${dictStudyLevelId}/${dictQualificationId}`,
-                null, 1);
-        }
-        catch (e) {
-            console.log('Error: ', e);
-            return e.responseJSON;
-        }
-    },
-    postAssignStudents: async function (data) {
-        try {
-            return await this.apiCallback('POST', `AltSubjects/AssignStudents`, data, 1);
-        }
-        catch (e) {
-            console.log('Error: ', e);
-            return e.statusText;
-        }
-    },
-    deleteStudentSelection: async function (id) {
-        try {
-            return await this.apiCallback('DELETE', `AltSubjects/DeleteStudentSelection/${id}`, null, 1);
-        }
-        catch (e) {
-            console.log('Error: ', e);
-            return e.statusText;
-        }
-    },
-    getAltSubjects: async function (bupId, numSemestr, subjectId) {
-        try {
-            return await this.apiCallback('GET', `AltSubjects/GetAltSubjects/${bupId}/${numSemestr}/${subjectId}`, null, 1);
-        }
-        catch (e) {
-            console.log('Error: ', e);
-            return e.statusText;
-        }
-    },
-    putChangeStudentSelection: async function (studentSelectionId, altSubjectId) {
-        try {
-            return await this.apiCallback('PUT', `AltSubjects/ChangeStudentSelection/${studentSelectionId}/${altSubjectId}`, null, 1);
-        }
-        catch (e) {
-            console.log('Error: ', e);
-            return e.statusText;
-        }
-    },
-    getAltSubjectsLimits: async function (studyYear) {
-        try {
-            return await this.apiCallback('GET', `AltSubjects/GetAltSubjectsLimits/${dictStudyLevelId}/${dictQualificationId}/${studyYear}`, null, 1);
-        }
-        catch (e) {
-            console.log('Error: ', e);
-            return e.statusText;
-        }
-    },
-    getTimeSelections: async function (studyYear) {
-        try {
-            return await this.apiCallback('GET', `AltSubjects/GetTimeSelections/${dictStudyLevelId}/${studyYear}`, null, 1);
-        }
-        catch (e) {
-            console.log('Error: ', e);
-            return e.statusText;
-        }
-    },
-    postTimeSelection: async function (data) {
-        try {
-            return await this.apiCallback('POST', `AltSubjects/SaveTimeSelection/${dictStudyLevelId}/${studyYear}`, data, 1);
-        }
-        catch (e) {
-            console.log('Error: ', e);
-            return e.statusText;
-        }
-    },
-    postAltSubjectLimits: async function (data) {
-        try {
-            return await this.apiCallback('POST', `AltSubjects/SaveLimits/${studyYear}`, data, 1);
-        }
-        catch (e) {
-            console.log('Error: ', e);
-            return e.statusText;
+            return e.responseJSON.message;
         }
     },
     apiCallback: async function (type, method, data, useAuth = 0) {
         if (useAuth == 1)
             await this.getToken();
 
-        return Promise.resolve($.ajax({
+        return await Promise.resolve($.ajax({
             type: type,
             url: baseUrl + method,
             contentType: "application/json; charset=utf-8",
@@ -250,8 +141,11 @@ var MongoApi = {
             },*/
             success: function (msg) {
                 return msg;
-            }
-            , error: function (xhr, ajaxOptions, thrownError) {
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                if (xhr.status == 200)
+                    return true;
+
                 console.log(`${xhr.status} ${thrownError}`);
             }
         }));
