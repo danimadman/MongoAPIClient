@@ -21,6 +21,7 @@
     </head>
     <body>
         <span id="notification" style="display:none;"></span>
+        <div id="details"></div>
 
         <div id="mongo-app">
             <section id="top-side-menu" class="work-container">
@@ -47,7 +48,7 @@
         <script type="text/javascript">
             kendo.culture("ru-RU");
 
-            var notification;
+            var notification, wnd;
 
             $(document).ready(function () {
                 notification = $("#notification").kendoNotification({
@@ -72,6 +73,19 @@
                     ]
                 }).data("kendoNotification");
 
+                wnd = $("#details").kendoWindow({
+                    title: "",
+                    modal: true,
+                    visible: false,
+                    resizable: false,
+                    scrollable: false,
+                    width: 800,
+                    position: {
+                        top: "calc(40%)",
+                        left: "calc(50% - 400px)"
+                    },
+                }).data("kendoWindow");
+
                 var templateLoader = (function ($, host) {
                     return {
                         loadExtTemplate: function (path) {
@@ -88,6 +102,8 @@
                         }
                     };
                 })(jQuery, document);
+
+                templateLoader.loadExtTemplate(layouts + "/templates/client-details.tmpl.htm");
                 templateLoader.loadExtTemplate(layouts + "/templates/clients.tmpl.htm");
                 templateLoader.loadExtTemplate(layouts + "/templates/hostel-room.tmpl.htm");
                 templateLoader.loadExtTemplate(layouts + "/templates/records.tmpl.htm");

@@ -1,0 +1,45 @@
+<script id="client-details-template" type="text/x-kendo-template">
+    <div class="client-details">
+        <section style="padding-right: 5px;">
+            <div>
+                <div class="property-title">Фамилия</div>
+                <input data-role="text-box" value="#=lastName#" placeholder="Введите фамилию"/>
+            </div>
+            <div>
+                <div class="property-title" style="margin-top: 10px;">Имя</div>
+                <input data-role="text-box" value="#=firstName#" placeholder="Введите имя"/>
+            </div>
+            <div>
+                <div class="property-title" style="margin-top: 10px;">Отчество</div>
+                <input data-role="text-box" value="#=middleName#" placeholder="Введите отчество"/>
+            </div>
+            <div>
+                <div class="property-title" style="margin-top: 10px;">Комментарий</div>
+                <textarea  data-role="text-area" value="#=comment#" placeholder="Введите комментарий" style="resize: vertical;"/>
+            </div>
+        </section>
+        <section style="padding-left: 5px;">
+            <div>
+                <div class="property-title">Серия</div>
+                <input data-role="text-box" value="#=passport.series#" placeholder="Введите серию паспорта"/>
+            </div>
+            <div>
+                <div class="property-title" style="margin-top: 10px;">Номер</div>
+                <input data-role="text-box" value="#=passport.number#" placeholder="Введите номер паспорта"/>
+            </div>
+            <div>
+                <div class="property-title" style="margin-top: 10px;">Кем выдан</div>
+                <input data-role="text-box" value="#=passport.issued#" placeholder="Введите название подразделения"/>
+            </div>
+            <div>
+                <div class="property-title" style="margin-top: 10px;">Дата выдачи</div>
+                <input data-role="date-picker" value="#=passport.dateIssued#" placeholder="Введите даты выдачи"/>
+            </div>
+            <div>
+                <div class="property-title" style="margin-top: 10px;">Код подразделения</div>
+                <input data-role="text-box" value="#=passport.divisionCode#" placeholder="Введите код подразделения"/>
+            </div>
+            <button type="button" class="btn btn-primary k-float-right k-mt-2" data-role="save-client">Сохранить</button>
+        </section>
+    </div>
+</script>

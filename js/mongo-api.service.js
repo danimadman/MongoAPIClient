@@ -125,6 +125,24 @@ var MongoApi = {
             return e.responseJSON.message;
         }
     },
+    getClients: async function () {
+        try {
+            return await this.apiCallback('GET', `Person/Get`, null, 0);
+        }
+        catch (e) {
+            console.log('Error: ', e);
+            return e.responseJSON;
+        }
+    },
+    getClient: async function (id) {
+        try {
+            return await this.apiCallback('GET', `Person/GetOne/${id}`, null, 0);
+        }
+        catch (e) {
+            console.log('Error: ', e);
+            return e.responseJSON;
+        }
+    },
     apiCallback: async function (type, method, data, useAuth = 0) {
         if (useAuth == 1)
             await this.getToken();

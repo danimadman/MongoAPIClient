@@ -46,3 +46,18 @@ body {
     box-shadow: 0 6px 8px 0 rgb(0 0 0 / 10%);
     padding: 10px;
 }
+.property-title {
+    font-weight: lighter;
+    font-size: 18px;
+    color: #959595;
+    margin-bottom: initial;
+    padding: 0;
+}
+.client-details {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+.client-details > section {
+    width: 50%;
+}

@@ -16,6 +16,19 @@ async function loadEditForm(editFormName) {
     $("#edit-form").html(template);
     $("#edit-form").show();
 
+    switch (editFormName) {
+        case Object.keys(editFormEnum)[0]:
+            await templateHostel();
+            break;
+        case Object.keys(editFormEnum)[1]:
+            await templateClients();
+            break;
+        case Object.keys(editFormEnum)[2]:
+            break;
+    }
+}
+
+async function templateHostel() {
     let comfortLevelList = await MongoApi.getDictComfortLevel();
 
     $("#hostel-room-list").kendoGrid({
@@ -30,36 +43,36 @@ async function loadEditForm(editFormName) {
         groupable: true,
         toolbar: ["create", "save", "cancel"],
         columns: [{
-                field: "number",
-                title: "№ отеля",
-                filterable: {
-                    cell: {
-                        operator: "contains",
-                        suggestionOperator: "contains"
-                    }
-                },
-                attributes: { style: "text-align: center;" },
-            }, {
-                field: "seats",
-                title: "Количество мест",
-                filterable: true,
-                sortable: true,
-                attributes: { style: "text-align: center;" }
-            }, {
-                field: "comfortLevel",
-                title: "Уровень комфорта",
-                filterable: true,
-                sortable: true,
-                attributes: { style: "text-align: center;" },
-                editable: function () { return false; },
-                template: '<select class="comfort-level-list"/>'
-            }, {
-                field: "cost",
-                title: "Цена за номер",
-                filterable: true,
-                sortable: true,
-                attributes: { style: "text-align: center;" }
+            field: "number",
+            title: "№ отеля",
+            filterable: {
+                cell: {
+                    operator: "contains",
+                    suggestionOperator: "contains"
+                }
             },
+            attributes: { style: "text-align: center;" },
+        }, {
+            field: "seats",
+            title: "Количество мест",
+            filterable: true,
+            sortable: true,
+            attributes: { style: "text-align: center;" }
+        }, {
+            field: "comfortLevel",
+            title: "Уровень комфорта",
+            filterable: true,
+            sortable: true,
+            attributes: { style: "text-align: center;" },
+            editable: function () { return false; },
+            template: '<select class="comfort-level-list"/>'
+        }, {
+            field: "cost",
+            title: "Цена за номер",
+            filterable: true,
+            sortable: true,
+            attributes: { style: "text-align: center;" }
+        },
             { command: [{
                     text: "Удалить",
                     title: "",
@@ -156,6 +169,117 @@ async function loadEditForm(editFormName) {
                         cost: { type: "number", editable: true, validation: { required: { message: "Обязательно к заполнению" }, min: 0 }, format: "{0:c}" },
                         comfortLevel: { type: "number", editable: false, validation: { required: { message: "Обязательно к заполнению" }, min: 1 } }
                     }
+                }
+            }
+        }));
+    }
+}
+
+async function templateClients() {
+    $("#clients-list").kendoGrid({
+        width: "100%",
+        pageable: {
+            pageSizes: [25, 50, 100, 250, 500, 1000, 2000, "all"]
+        },
+        sortable: true,
+        scrollable: true,
+        filterable: true,
+        editable: false,
+        columns: [{
+            field: "firstName",
+            title: "Имя",
+            filterable: {
+                cell: {
+                    operator: "contains",
+                    suggestionOperator: "contains"
+                }
+            },
+            attributes: { style: "text-align: center;" },
+        }, {
+            field: "middleName",
+            title: "Отчество",
+            filterable: {
+                cell: {
+                    operator: "contains",
+                    suggestionOperator: "contains"
+                }
+            },
+            sortable: true,
+            attributes: { style: "text-align: center;" }
+        }, {
+            field: "lastName",
+            title: "Фамилия",
+            filterable: {
+                cell: {
+                    operator: "contains",
+                    suggestionOperator: "contains"
+                }
+            },
+            sortable: true,
+            attributes: { style: "text-align: center;" }
+        }, {
+            command: {
+                text: "Детали",
+                title: "",
+                attributes: { style: "text-align: center;" },
+                click: function(e) {
+                    e.preventDefault();
+                    let tr = $(e.target).closest("tr");
+                    let data = this.dataItem(tr);
+                    let tmplClientDetails = kendo.template($("#client-details-template").html());
+                    wnd.content(tmplClientDetails(data));
+                    $('[data-role="text-box"]').kendoTextBox();
+                    $('[data-role="date-picker"]').kendoDatePicker();
+                    $('[data-role="text-area"]').kendoTextArea({
+                        maxLength: 1000,
+                        heigth: "100%",
+                        rows: 5
+                    });
+                    wnd.open();
+                }
+            },
+            width: 100
+        }, {
+            text: "Удалить",
+            title: "",
+            attributes: { style: "text-align: center;" },
+            click: function(e) {
+                e.preventDefault();
+                /*if (!confirm("Вы действительно хотите удалить эту запись?"))
+                    return;*/
+                let tr = $(e.target).closest("tr");
+                let data = this.dataItem(tr);
+                if (data.id != null)
+                    (async () => {
+                        let res = await MongoApi.deleteHotelRoom(data.id);
+                        if (typeof(res) == 'string') {
+                            showApiNotification('Не удалось удалить запись', 'Удаление', notificationEnum.error);
+                            return;
+                        }
+                        await loadClientsGrid();
+                    })()
+                else {
+                    let grid = $("#clients-list").data("kendoGrid");
+                    grid.removeRow(tr);
+                }
+            },
+            width: 100
+        }]
+    }).data("kendoGrid");
+
+    await loadClientsGrid();
+
+    async function loadClientsGrid() {
+        let dataGrid = await MongoApi.getClients();
+        if (dataGrid === undefined)
+            return;
+
+        $("#clients-list").data("kendoGrid").setDataSource(new kendo.data.DataSource({
+            data: dataGrid,
+            pageSize: 25,
+            schema: {
+                model: {
+                    id: "id"
                 }
             }
         }));
