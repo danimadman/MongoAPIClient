@@ -143,6 +143,42 @@ var MongoApi = {
             return e.responseJSON;
         }
     },
+    postClient: async function (data) {
+        try {
+            return await this.apiCallbackForm('POST', `Person/Post`, data, 0);
+        }
+        catch (e) {
+            if (e.status == 200)
+                return true;
+
+            console.log('Error: ', e);
+            return e.responseJSON.message;
+        }
+    },
+    putClient: async function (data) {
+        try {
+            return await this.apiCallbackForm('PUT', `Person/Update`, data, 0);
+        }
+        catch (e) {
+            if (e.status == 200)
+                return true;
+
+            console.log('Error: ', e);
+            return e.responseJSON.message;
+        }
+    },
+    deleteClient: async function (id) {
+        try {
+            return await this.apiCallback('DELETE', `Person/Delete/${id}`, null, 0);
+        }
+        catch (e) {
+            if (e.status == 200)
+                return true;
+
+            console.log('Error: ', e);
+            return e.responseJSON.message;
+        }
+    },
     apiCallback: async function (type, method, data, useAuth = 0) {
         if (useAuth == 1)
             await this.getToken();
@@ -153,10 +189,10 @@ var MongoApi = {
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             data: (data === null) ? data : JSON.stringify(data),
-            /*beforeSend: function (xhr) {
+            beforeSend: function (xhr) {
                 if (useAuth == 1)
                     xhr.setRequestHeader("Authorization", "Bearer " + token.accessToken);
-            },*/
+            },
             success: function (msg) {
                 return msg;
             },
@@ -172,21 +208,24 @@ var MongoApi = {
         if (useAuth == 1)
             await this.getToken();
 
-        return Promise.resolve($.ajax({
+        return await Promise.resolve($.ajax({
             type: type,
             url: baseUrl + method,
             data: data,
             cache: false,
             contentType: false,
             processData: false,
-            /*beforeSend: function (xhr) {
+            beforeSend: function (xhr) {
                 if (useAuth == 1)
                     xhr.setRequestHeader("Authorization", "Bearer " + token.accessToken);
-            },*/
+            },
             success: function (msg) {
                 return msg;
-            }
-            , error: function (xhr, ajaxOptions, thrownError) {
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                if (xhr.status == 200)
+                    return true;
+
                 console.log(`${xhr.status} ${thrownError}`);
             }
         }));

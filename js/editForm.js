@@ -22,6 +22,23 @@ async function loadEditForm(editFormName) {
             break;
         case Object.keys(editFormEnum)[1]:
             await templateClients();
+            $('[data-role="open-client-add"]').click(function () {
+                openClientDetails({
+                    id: null,
+                    lastName: null,
+                    firstName: null,
+                    middleName: null,
+                    birthDay: null,
+                    comment: null,
+                    passport: {
+                        series: null,
+                        number: null,
+                        issued: null,
+                        dateIssued: null,
+                        divisionCode: null
+                    }
+                });
+            });
             break;
         case Object.keys(editFormEnum)[2]:
             break;
@@ -72,35 +89,35 @@ async function templateHostel() {
             filterable: true,
             sortable: true,
             attributes: { style: "text-align: center;" }
-        },
-            { command: [{
-                    text: "Удалить",
-                    title: "",
-                    attributes: { style: "text-align: center;" },
-                    click: function(e) {
-                        e.preventDefault();
-                        /*if (!confirm("Вы действительно хотите удалить эту запись?"))
-                            return;*/
-                        let tr = $(e.target).closest("tr");
-                        let data = this.dataItem(tr);
-                        if (data.id != null)
-                            (async () => {
-                                let res = await MongoApi.deleteHotelRoom(data.id);
-                                if (typeof(res) == 'string') {
-                                    showApiNotification('Не удалось удалить запись', 'Удаление', notificationEnum.error);
-                                    return;
-                                }
-                                await loadGrid();
-                            })()
-                        else {
-                            let grid = $("#hostel-room-list").data("kendoGrid");
-                            grid.removeRow(tr);
-                        }
+        }, {
+            command: [{
+                text: "Удалить",
+                title: "",
+                attributes: { style: "text-align: center;" },
+                click: function(e) {
+                    e.preventDefault();
+                    let tr = $(e.target).closest("tr");
+                    let data = this.dataItem(tr);
+                    if (data.id != null) {
+                        if (!confirm("Вы действительно хотите удалить эту запись?"))
+                            return;
+                        (async () => {
+                            let res = await MongoApi.deleteHotelRoom(data.id);
+                            if (typeof(res) == 'string') {
+                                showApiNotification('Не удалось удалить запись', 'Удаление', notificationEnum.error);
+                                return;
+                            }
+                            await loadHostelGrid();
+                        })();
                     }
-                }],
-                width: 100
-            }
-        ],
+                    else {
+                        let grid = $("#hostel-room-list").data("kendoGrid");
+                        grid.removeRow(tr);
+                    }
+                }
+            }],
+            width: 100
+        }],
         saveChanges: function(e) {
             let grid = $("#hostel-room-list").data("kendoGrid");
             let currentData = grid.dataSource.data();
@@ -115,7 +132,7 @@ async function templateHostel() {
                         }
                     }
                 }
-                await loadGrid();
+                await loadHostelGrid();
             })();
         },
         dataBound: function(e) {
@@ -148,31 +165,7 @@ async function templateHostel() {
         }
     }).data("kendoGrid");
 
-    await loadGrid();
-
-    async function loadGrid() {
-        let dataGrid = await MongoApi.getHotelRooms();
-        if (dataGrid === undefined)
-            return;
-
-        $("#hostel-room-list").data("kendoGrid").setDataSource(new kendo.data.DataSource({
-            data: dataGrid,
-            pageSize: 25,
-            batch: true,
-            schema: {
-                model: {
-                    id: "id",
-                    fields: {
-                        id: { editable: false, nullable: true },
-                        number: { type: "number", editable: true, validation: { required: { message: "Обязательно к заполнению" }, min: 0 } },
-                        seats: { type: "number", editable: true, validation: { required: { message: "Обязательно к заполнению" }, min: 0 } },
-                        cost: { type: "number", editable: true, validation: { required: { message: "Обязательно к заполнению" }, min: 0 }, format: "{0:c}" },
-                        comfortLevel: { type: "number", editable: false, validation: { required: { message: "Обязательно к заполнению" }, min: 1 } }
-                    }
-                }
-            }
-        }));
-    }
+    await loadHostelGrid();
 }
 
 async function templateClients() {
@@ -218,6 +211,18 @@ async function templateClients() {
             sortable: true,
             attributes: { style: "text-align: center;" }
         }, {
+            field: "birthDay",
+            title: "Дата рождения",
+            format: "{0: dd MMMM yyyy год}",
+            filterable: {
+                cell: {
+                    operator: "contains",
+                    suggestionOperator: "contains"
+                }
+            },
+            sortable: true,
+            attributes: { style: "text-align: center;" }
+        }, {
             command: {
                 text: "Детали",
                 title: "",
@@ -226,62 +231,119 @@ async function templateClients() {
                     e.preventDefault();
                     let tr = $(e.target).closest("tr");
                     let data = this.dataItem(tr);
-                    let tmplClientDetails = kendo.template($("#client-details-template").html());
-                    wnd.content(tmplClientDetails(data));
-                    $('[data-role="text-box"]').kendoTextBox();
-                    $('[data-role="date-picker"]').kendoDatePicker();
-                    $('[data-role="text-area"]').kendoTextArea({
-                        maxLength: 1000,
-                        heigth: "100%",
-                        rows: 5
-                    });
-                    wnd.open();
+                    openClientDetails(data);
                 }
             },
-            width: 100
+            width: 95
         }, {
-            text: "Удалить",
-            title: "",
-            attributes: { style: "text-align: center;" },
-            click: function(e) {
-                e.preventDefault();
-                /*if (!confirm("Вы действительно хотите удалить эту запись?"))
-                    return;*/
-                let tr = $(e.target).closest("tr");
-                let data = this.dataItem(tr);
-                if (data.id != null)
-                    (async () => {
-                        let res = await MongoApi.deleteHotelRoom(data.id);
-                        if (typeof(res) == 'string') {
-                            showApiNotification('Не удалось удалить запись', 'Удаление', notificationEnum.error);
-                            return;
-                        }
-                        await loadClientsGrid();
-                    })()
-                else {
-                    let grid = $("#clients-list").data("kendoGrid");
-                    grid.removeRow(tr);
+            command: {
+                text: "Удалить",
+                title: "",
+                attributes: {style: "text-align: center;"},
+                click: function (e) {
+                    e.preventDefault();
+                    if (!confirm("Вы действительно хотите удалить эту запись?"))
+                        return;
+                    let tr = $(e.target).closest("tr");
+                    let data = this.dataItem(tr);
+                    if (data.id != null)
+                        (async () => {
+                            let res = await MongoApi.deleteClient(data.id);
+                            if (typeof (res) == 'string') {
+                                showApiNotification(res, 'Удаление', notificationEnum.error);
+                                return;
+                            }
+                            await loadClientsGrid();
+                        })()
+                    else {
+                        let grid = $("#clients-list").data("kendoGrid");
+                        grid.removeRow(tr);
+                    }
                 }
             },
-            width: 100
+            width: 101
         }]
     }).data("kendoGrid");
 
     await loadClientsGrid();
+}
 
-    async function loadClientsGrid() {
-        let dataGrid = await MongoApi.getClients();
-        if (dataGrid === undefined)
-            return;
+async function loadHostelGrid() {
+    let dataGrid = await MongoApi.getHotelRooms();
+    if (dataGrid === undefined)
+        return;
 
-        $("#clients-list").data("kendoGrid").setDataSource(new kendo.data.DataSource({
-            data: dataGrid,
-            pageSize: 25,
-            schema: {
-                model: {
-                    id: "id"
+    $("#hostel-room-list").data("kendoGrid").setDataSource(new kendo.data.DataSource({
+        data: dataGrid,
+        pageSize: 25,
+        batch: true,
+        schema: {
+            model: {
+                id: "id",
+                fields: {
+                    id: { editable: false, nullable: true },
+                    number: { type: "number", editable: true, validation: { required: { message: "Обязательно к заполнению" }, min: 0 } },
+                    seats: { type: "number", editable: true, validation: { required: { message: "Обязательно к заполнению" }, min: 0 } },
+                    cost: { type: "number", editable: true, validation: { required: { message: "Обязательно к заполнению" }, min: 0 }, format: "{0:c}" },
+                    comfortLevel: { type: "number", editable: false, validation: { required: { message: "Обязательно к заполнению" }, min: 1 } }
                 }
             }
-        }));
-    }
+        }
+    }));
+}
+
+async function loadClientsGrid() {
+    let dataGrid = await MongoApi.getClients();
+    if (dataGrid === undefined)
+        return;
+
+    $("#clients-list").data("kendoGrid").setDataSource(new kendo.data.DataSource({
+        data: dataGrid,
+        pageSize: 25,
+        schema: {
+            model: {
+                id: "id",
+                fields: {
+                    id: { editable: false, nullable: true },
+                    birthDay: { type: "date", nullable: true },
+                }
+            }
+        }
+    }));
+}
+
+function openClientDetails(data) {
+    let tmplClientDetails = kendo.template($("#client-details-template").html());
+    wnd.content(tmplClientDetails(data));
+    $('[control-type="text-box"]').kendoTextBox();
+    $('[control-type="date-picker"]').kendoDatePicker();
+    $('[control-type="text-area"]').kendoTextArea({
+        maxLength: 1000,
+        heigth: "100%",
+        rows: 5
+    });
+    $('[data-role="save-client"]').click(async function () {
+        let formData = new FormData();
+
+        $('[data-role="property"]').each(function () {
+            let propertyName = $(this).data("property-name");
+            let propertyValue = $(this).val();
+            formData.append(propertyName, propertyValue);
+        });
+
+        let res = formData.get("id") == null
+            ? await MongoApi.postClient(formData)
+            : await MongoApi.putClient(formData);
+
+        if (typeof (res) == 'string' && res != "") {
+            showApiNotification(res, 'Сохранение', notificationEnum.error);
+            return;
+        }
+        wnd.close();
+        await loadClientsGrid();
+    });
+    $('[data-role="cancel-client"]').click(function () {
+        wnd.close();
+    });
+    wnd.center().open();
 }
