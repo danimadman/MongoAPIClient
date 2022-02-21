@@ -179,6 +179,45 @@ var MongoApi = {
             return e.responseJSON.message;
         }
     },
+    getRecords: async function () {
+        try {
+            return await this.apiCallback('GET', `PersonInRoom/Get`, null, 0);
+        }
+        catch (e) {
+            console.log('Error: ', e);
+            return e.responseJSON;
+        }
+    },
+    getRecord: async function (id) {
+        try {
+            return await this.apiCallback('GET', `PersonInRoom/GetOne/${id}`, null, 0);
+        }
+        catch (e) {
+            console.log('Error: ', e);
+            return e.responseJSON;
+        }
+    },
+    getRecordDetails: async function (id) {
+        try {
+            return await this.apiCallback('GET', `PersonInRoom/GeRecordDetails/${id}`, null, 0);
+        }
+        catch (e) {
+            console.log('Error: ', e);
+            return e.responseJSON.message;
+        }
+    },
+    deleteRecord: async function (id) {
+        try {
+            return await this.apiCallback('DELETE', `PersonInRoom/Delete/${id}`, null, 0);
+        }
+        catch (e) {
+            if (e.status == 200)
+                return true;
+
+            console.log('Error: ', e);
+            return e.responseJSON.message;
+        }
+    },
     apiCallback: async function (type, method, data, useAuth = 0) {
         if (useAuth == 1)
             await this.getToken();

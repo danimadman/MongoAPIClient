@@ -77,8 +77,7 @@
                     title: "",
                     modal: true,
                     visible: false,
-                    resizable: false,
-                    scrollable: false,
+                    resizable: true,
                     width: 800,
                     /*position: {
                         top: "calc(40%)",
@@ -107,6 +106,7 @@
                 templateLoader.loadExtTemplate(layouts + "/templates/clients.tmpl.htm");
                 templateLoader.loadExtTemplate(layouts + "/templates/hostel-room.tmpl.htm");
                 templateLoader.loadExtTemplate(layouts + "/templates/records.tmpl.htm");
+                templateLoader.loadExtTemplate(layouts + "/templates/record-details.tmpl.htm");
 
                 setTimeout(init, 1);
             });
@@ -126,7 +126,7 @@
 
                 $("[data-role='open-edit-form']").click(async function() {
                     let templateName = $(this).data("template");
-                    await loadEditForm(templateName);
+                    await loadEditForm("edit-form", templateName);
                 });
             }
         </script>
