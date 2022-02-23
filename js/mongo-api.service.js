@@ -218,6 +218,30 @@ var MongoApi = {
             return e.responseJSON.message;
         }
     },
+    postRecord: async function (data) {
+        try {
+            return await this.apiCallbackForm('POST', `PersonInRoom/Post`, data, 0);
+        }
+        catch (e) {
+            if (e.status == 200)
+                return true;
+
+            console.log('Error: ', e);
+            return e.responseJSON.message;
+        }
+    },
+    putRecord: async function (data) {
+        try {
+            return await this.apiCallbackForm('PUT', `PersonInRoom/Update`, data, 0);
+        }
+        catch (e) {
+            if (e.status == 200)
+                return true;
+
+            console.log('Error: ', e);
+            return e.responseJSON.message;
+        }
+    },
     apiCallback: async function (type, method, data, useAuth = 0) {
         if (useAuth == 1)
             await this.getToken();

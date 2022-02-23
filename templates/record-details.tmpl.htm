@@ -18,13 +18,15 @@
                 <h3 style="margin-top: 10px;">Данные записи</h3>
                 <label class="property-title">Дата заселения</label>
                 <input control-type="datepicker" data-role="property" data-property-name="SettlementDate"
-                       value="#=settlementDate ?? ''#" placeholder="Введите дату заселения"/>
+                       value="#=kendo.toString(settlementDate ?? '', 'dd.MM.yyyy')#" placeholder="Введите дату заселения"/>
                 <label class="property-title" style="margin-top: 10px;">Дата освобождения</label>
                 <input control-type="datepicker" data-role="property" data-property-name="ReleaseDate"
-                       value="#=releaseDate ?? ''#" placeholder="Введите даты выдачи"/>
+                       value="#=kendo.toString(releaseDate ?? '', 'dd.MM.yyyy')#" placeholder="Введите даты выдачи"/>
                 <label class="property-title" style="margin-top: 10px;">Примечание</label>
                 <textarea control-type="textarea" data-role="property" data-property-name="Note"
-                          value="#=note ?? ''#" placeholder="Введите примечание" style="resize: vertical;"/>
+                    placeholder="Введите примечание" style="resize: vertical;">#=note ?? ''#</textarea>
+                <button type="button" class="btn btn-primary k-float-right k-mt-2" data-role="save-client">Сохранить</button>
+                <button type="button" class="btn btn-secondary k-float-left k-mr-2 k-mt-2" data-role="cancel-client">Отмена</button>
             </section>
         </div>
     </form>

@@ -258,7 +258,7 @@ var ClientsService = {
                         e.preventDefault();
                         let tr = $(e.target).closest("tr");
                         let data = this.dataItem(tr);
-                        ClientsService.openDetails(data);
+                        (async () => { await ClientsService.openDetails(data.id); })();
                     }
                 },
                 width: 95
@@ -281,7 +281,7 @@ var ClientsService = {
                                     return;
                                 }
                                 await ClientsService.loadGrid();
-                            })()
+                            })();
                         else {
                             let grid = $("#clients-list").data("kendoGrid");
                             grid.removeRow(tr);
@@ -292,22 +292,8 @@ var ClientsService = {
             }]
         }).data("kendoGrid");
 
-        $('[data-role="open-client-add"]').click(function () {
-            openClientDetails({
-                id: null,
-                lastName: null,
-                firstName: null,
-                middleName: null,
-                birthDay: null,
-                comment: null,
-                passport: {
-                    series: null,
-                    number: null,
-                    issued: null,
-                    dateIssued: null,
-                    divisionCode: null
-                }
-            });
+        $('[data-role="open-client-add"]').click(async function () {
+            await ClientsService.openDetails(null);
         });
 
         await this.loadGrid();
@@ -331,9 +317,24 @@ var ClientsService = {
             }
         }));
     },
-    openDetails: function (data) {
-        let tmplClientDetails = kendo.template($("#client-details-template").html());
-        wnd.content(tmplClientDetails(data));
+    openDetails: async function (id) {
+        let data = id != null ? await MongoApi.getClient(id) : {
+            id: null,
+            lastName: null,
+            firstName: null,
+            middleName: null,
+            birthDay: null,
+            comment: null,
+            passport: {
+                series: null,
+                number: null,
+                issued: null,
+                dateIssued: null,
+                divisionCode: null
+            }
+        };
+        let tmpl = kendo.template($("#client-details-template").html());
+        wnd.content(tmpl(data));
         $('[control-type="text-box"]').kendoTextBox();
         $('[control-type="date-picker"]').kendoDatePicker();
         $('[control-type="text-area"]').kendoTextArea({
@@ -350,7 +351,7 @@ var ClientsService = {
                 formData.append(propertyName, propertyValue);
             });
 
-            let res = formData.get("id") == null
+            let res = formData.get("Id") == null || formData.get("Id") == ''
                 ? await MongoApi.postClient(formData)
                 : await MongoApi.putClient(formData);
 
@@ -486,22 +487,8 @@ var RecordsService = {
             }]
         }).data("kendoGrid");
 
-        $('[data-role="records-add"]').click(function () {
-            openClientDetails({
-                id: null,
-                lastName: null,
-                firstName: null,
-                middleName: null,
-                birthDay: null,
-                comment: null,
-                passport: {
-                    series: null,
-                    number: null,
-                    issued: null,
-                    dateIssued: null,
-                    divisionCode: null
-                }
-            });
+        $('[data-role="records-add"]').click(async function () {
+            await RecordsService.openDetails(null);
         });
 
         await this.loadGrid();
@@ -527,7 +514,14 @@ var RecordsService = {
         }));
     },
     openDetails: async function (id) {
-        let data = await MongoApi.getRecord(id);
+        let data = id != null ? await MongoApi.getRecord(id) : {
+            id: null,
+            personId: null,
+            hotelRoomId: null,
+            settlementDate: null,
+            releaseDate: null,
+            note: null
+        };
         if (typeof (data) == 'string') {
             showApiNotification(data, 'Получение деталей записи', notificationEnum.error);
             return;
@@ -535,11 +529,29 @@ var RecordsService = {
         let tmpl = kendo.template($("#record-details-template").html());
         wnd.content(tmpl(data));
 
-        $('[control-type="combobox"]').kendoComboBox();
         $('[control-type="datepicker"]').kendoDatePicker();
         $('[control-type="textarea"]').kendoTextArea({
             maxLength: 1000,
             rows: 5
+        });
+        let dataGrid = await MongoApi.getClients();
+        $('[data-property-name="PersonId"]').kendoComboBox({
+            filter:"startswith",
+            dataTextField: 'personFIO',
+            dataValueField: "id",
+            value: data.personId,
+            template: '#:lastName# #:firstName# #:middleName#<br/>' +
+                'Дата рождения: #:kendo.toString(kendo.parseDate(birthDay), "dd.MM.yyyy г.")#',
+            dataSource: dataGrid
+        });
+        dataGrid = await MongoApi.getHotelRooms();
+        $('[data-property-name="HotelRoomId"]').kendoComboBox({
+            filter:"startswith",
+            dataTextField: "number",
+            dataValueField: "id",
+            value: data.hotelRoomId,
+            template: 'Номер отеля: #:number#<br/>Количество свободных мест: #:seats#<br/>Цена: #:cost#',
+            dataSource: dataGrid
         });
 
         $('[data-role="save-client"]').click(async function () {
@@ -551,9 +563,9 @@ var RecordsService = {
                 formData.append(propertyName, propertyValue);
             });
 
-            let res = formData.get("id") == null
-                ? await MongoApi.postClient(formData)
-                : await MongoApi.putClient(formData);
+            let res = formData.get("Id") == null || formData.get("Id") == ''
+                ? await MongoApi.postRecord(formData)
+                : await MongoApi.putRecord(formData);
 
             if (typeof (res) == 'string' && res != "") {
                 showApiNotification(res, 'Сохранение', notificationEnum.error);

@@ -14,10 +14,10 @@
                        value="#=middleName ?? ''#" placeholder="Введите отчество"/>
                 <label class="property-title" style="margin-top: 10px;">Дата рождения</label>
                 <input control-type="date-picker" data-role="property" data-property-name="BirthDay"
-                       value="#=birthDay ?? ''#" placeholder="Введите дату рождения"/>
+                       value="#=kendo.toString(birthDay ?? '', 'dd.MM.yyyy')#" placeholder="Введите дату рождения"/>
                 <label class="property-title" style="margin-top: 10px;">Комментарий</label>
                 <textarea control-type="text-area" data-role="property" data-property-name="Comment"
-                          value="#=comment ?? ''#" placeholder="Введите комментарий" style="resize: vertical;"/>
+                    placeholder="Введите комментарий" style="resize: vertical;">#=comment ?? ''#</textarea>
             </section>
             <section style="padding-left: 5px;">
                 <label class="property-title">Серия</label>
@@ -31,7 +31,7 @@
                        value="#=passport?.issued ?? ''#" placeholder="Введите название подразделения"/>
                 <label class="property-title" style="margin-top: 10px;">Дата выдачи</label>
                 <input control-type="date-picker" data-role="property" data-property-name="Passport.DateIssued"
-                       value="#=passport?.dateIssued ?? ''#" placeholder="Введите даты выдачи"/>
+                       value="#=kendo.toString(passport?.dateIssued ?? '', 'dd.MM.yyyy')#" placeholder="Введите даты выдачи"/>
                 <label class="property-title" style="margin-top: 10px;">Код подразделения</label>
                 <input control-type="text-box" data-role="property" data-property-name="Passport.DivisionCode"
                        value="#=passport?.divisionCode ?? ''#" placeholder="Введите код подразделения"/>
