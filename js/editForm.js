@@ -31,8 +31,6 @@ var HostelService = {
         $(`#${containerName}`).html(template);
         $(`#${containerName}`).show();
 
-        let comfortLevelList = await MongoApi.getDictComfortLevel();
-
         $("#hostel-room-list").kendoGrid({
             width: "100%",
             pageable: {
@@ -529,7 +527,7 @@ var RecordsService = {
         let tmpl = kendo.template($("#record-details-template").html());
         wnd.content(tmpl(data));
 
-        $('[control-type="datepicker"]').kendoDatePicker();
+        $('[control-type="datetimepicker"]').kendoDateTimePicker();
         $('[control-type="textarea"]').kendoTextArea({
             maxLength: 1000,
             rows: 5
@@ -544,13 +542,15 @@ var RecordsService = {
                 'Дата рождения: #:kendo.toString(kendo.parseDate(birthDay), "dd.MM.yyyy г.")#',
             dataSource: dataGrid
         });
+
         dataGrid = await MongoApi.getHotelRooms();
         $('[data-property-name="HotelRoomId"]').kendoComboBox({
             filter:"startswith",
             dataTextField: "number",
             dataValueField: "id",
             value: data.hotelRoomId,
-            template: 'Номер отеля: #:number#<br/>Количество свободных мест: #:seats#<br/>Цена: #:cost#',
+            template: 'Номер отеля: #:number#<br/>Количество свободных мест: #:seats#' +
+                '<br/>Цена: #:cost#<br/>Урвоень комфорта: #:getComfortLevelName(comfortLevel)#',
             dataSource: dataGrid
         });
 
@@ -580,3 +580,7 @@ var RecordsService = {
         wnd.center().open();
     }
 };
+
+function getComfortLevelName(id) {
+    return comfortLevelList?.find(x => x.id == id)?.name ?? "";
+}

@@ -49,6 +49,7 @@
             kendo.culture("ru-RU");
 
             var notification, wnd;
+            var comfortLevelList;
 
             $(document).ready(function () {
                 notification = $("#notification").kendoNotification({
@@ -129,6 +130,8 @@
                     let templateName = $(this).data("template");
                     await loadEditForm("edit-form", templateName);
                 });
+
+                comfortLevelList = await MongoApi.getDictComfortLevel();
             }
         </script>
     </body>

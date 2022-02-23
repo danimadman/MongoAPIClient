@@ -6,21 +6,19 @@
                 <h3 style="margin-top: 0;">Клиент</h3>
                 <select control-type="combobox" data-role="property" data-property-name="PersonId"
                         value="#=personId ?? ''#" placeholder="Выберите клиента"/>
-                <div data-role="client-details"></div>
             </section>
             <section style="flex: 1; margin-left: 5px;">
                 <h3 style="margin-top: 0;">Номер отеля</h3>
                 <select control-type="combobox" data-role="property" data-property-name="HotelRoomId"
                         value="#=hotelRoomId ?? ''#" placeholder="Выберите номер отеля"/>
-                <div data-role="record-details"></div>
             </section>
             <section style="width: 100%;">
                 <h3 style="margin-top: 10px;">Данные записи</h3>
                 <label class="property-title">Дата заселения</label>
-                <input control-type="datepicker" data-role="property" data-property-name="SettlementDate"
+                <input control-type="datetimepicker" data-role="property" data-property-name="SettlementDate"
                        value="#=kendo.toString(settlementDate ?? '', 'dd.MM.yyyy')#" placeholder="Введите дату заселения"/>
                 <label class="property-title" style="margin-top: 10px;">Дата освобождения</label>
-                <input control-type="datepicker" data-role="property" data-property-name="ReleaseDate"
+                <input control-type="datetimepicker" data-role="property" data-property-name="ReleaseDate"
                        value="#=kendo.toString(releaseDate ?? '', 'dd.MM.yyyy')#" placeholder="Введите даты выдачи"/>
                 <label class="property-title" style="margin-top: 10px;">Примечание</label>
                 <textarea control-type="textarea" data-role="property" data-property-name="Note"
