@@ -242,24 +242,80 @@ var MongoApi = {
             return e.responseJSON.message;
         }
     },
+
+
     getDatabases: async function () {
         try {
-            return await this.apiCallback('GET', `Mongo/GetDataBases/${connString}`, null, 0);
+            return await this.apiCallback('GET', `Mongo/GetDataBases?connString=${connString}`, null, 0);
         }
         catch (e) {
+            console.log('Error: ', e);
+            return e.responseJSON.message;
+        }
+    },
+    postDatabase: async function (dbName) {
+        try {
+            return await this.apiCallback('POST', `Mongo/PostDb`, {
+                connString: connString,
+                dbName: dbName
+            }, 0);
+        }
+        catch (e) {
+            if (e.status == 200)
+                return true;
+
+            console.log('Error: ', e);
+            return e.responseJSON.message;
+        }
+    },
+    postCollection: async function (dbName, collectionName) {
+        try {
+            return await this.apiCallback('POST', `Mongo/PostCollection`, {
+                connString: connString,
+                dbName: dbName,
+                collectionName: collectionName
+            }, 0);
+        }
+        catch (e) {
+            if (e.status == 200)
+                return true;
+
             console.log('Error: ', e);
             return e.responseJSON.message;
         }
     },
     getCollections: async function (dbName) {
         try {
-            return await this.apiCallback('GET', `Mongo/GetCollections/${connString}/${dbName}`, null, 0);
+            return await this.apiCallback('GET', `Mongo/GetCollections?connString=${connString}&dbName=${dbName}`, null, 0);
         }
         catch (e) {
             console.log('Error: ', e);
             return e.responseJSON.message;
         }
     },
+    getCollectionContent: async function (dbName, collectionName, comfortLevel) {
+        try {
+            return await this.apiCallback('GET', `Mongo/GetContent?connString=${connString}&dbName=${dbName}&collectionName=${collectionName}
+                &comfortLevel=${comfortLevel}`, null, 0);
+        }
+        catch (e) {
+            console.log('Error: ', e);
+            return e.responseJSON.message;
+        }
+    },
+    postDoc: async function (dbName, collectionName) {
+        try {
+            return await this.apiCallback('POST', `Mongo/CreateDoc?connString=${connString}&dbName=${dbName}&collectionName=${collectionName}`, null, 0);
+        }
+        catch (e) {
+            if (e.status == 200)
+                return true;
+
+            console.log('Error: ', e);
+            return e.responseJSON.message;
+        }
+    },
+
     apiCallback: async function (type, method, data, useAuth = 0) {
         if (useAuth == 1)
             await this.getToken();

@@ -5,18 +5,34 @@
                 <label class="property-title">Строка подключения</label>
                 <input control-type="textbox" id="connectionString" value="mongodb://localhost:27017"
                     placeholder="Введите строку подключения"/>
-
-                <label class="property-title">Базы данных</label>
-                <select control-type="combobox" id="database" placeholder="Выберите клиента"/>
-
-                <button type="button" class="btn btn-primary k-mr-2" id="btnNewDb">Создать бд</button>
-                <input control-type="textbox" id="newDatabase" placeholder="Введите название новой БД"/>
-
-                <label class="property-title">Коллекции</label>
-                <select control-type="combobox" id="collections" placeholder="Выберите клиента"/>
-
-                <button type="button" class="btn btn-primary k-mr-2" id="btnNewCollection">Создать коллекцию</button>
-                <input control-type="textbox" id="newCollection" placeholder="Введите название новой коллекции"/>
+                <div>
+                    <label class="property-title">Базы данных</label>
+                    <select control-type="combobox" id="database" placeholder="Выберите базу данных"/>
+                    <div class="k-mt-2">
+                        <input control-type="textbox" id="newDatabase" style="max-width: 300px;" placeholder="Введите название новой БД"/>
+                        <button type="button" class="btn btn-primary k-mr-2" id="btnNewDb">Создать бд</button>
+                    </div>
+                </div>
+                <div>
+                    <label class="property-title">Коллекции</label>
+                    <select control-type="combobox" id="collections" placeholder="Выберите коллекцию"/>
+                    <div class="k-mt-2">
+                        <input control-type="textbox" id="newCollection" style="max-width: 300px;" placeholder="Введите название новой коллекции"/>
+                        <button type="button" class="btn btn-primary k-mr-2" id="btnNewCollection">Создать коллекцию</button>
+                    </div>
+                </div>
+                <div class="k-mt-2">
+                    <label class="property-title">Фильтр</label>
+                    <input control-type="numeric" id="comfortLevel" style="max-width: 300px;" placeholder="уровень комфорта"/>
+                </div>
+                <div>
+                    <label class="property-title">Содержимое коллекции</label>
+                    <br/>
+                    <button type="button" class="btn btn-primary k-mb-2" id="btnGetContent">Получить содержимое</button>
+                    <button type="button" class="btn btn-primary k-mb-2 k-ml-2" id="insertDoc">Вставить документ в коллекцию</button>
+                    <div id="content1"></div>
+                    <textarea control-type="textarea" id="collectionContent" style="resize: vertical;"/>
+                </div>
             </section>
         </div>
     </form>

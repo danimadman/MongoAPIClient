@@ -597,17 +597,62 @@ function loatTemplateMongo(containerName) {
     $(`#${containerName}`).show();
 
     $('[control-type="textbox"]').kendoTextBox();
+    $('[control-type="numeric"]').kendoNumericTextBox();
+    $('[control-type="textarea"]').kendoTextArea({
+        rows: 5
+    });
 
-    $('#connectionString').click(function () {
+    $('#connectionString').select(function () {
         connString = $(this).val();
+        (async () => { await initDbList(); })();
+    });
+
+    $("#btnNewDb").click(function () {
         (async () => {
-            let db = await MongoApi.getDatabases();
-            $('#database').setDataSource(new kendo.data.DataSource({
-                data: db
-            }));
-            $('#collections').setDataSource(new kendo.data.DataSource({
-                data: []
-            }));
+            let res = await MongoApi.postDatabase($('#newDatabase').val());
+
+            if (typeof (res) == 'string' && res != "") {
+                showApiNotification(res, 'Сохранение', notificationEnum.error);
+                return;
+            }
+
+            await initDbList();
+        })();
+    });
+
+    $("#btnNewCollection").click(function () {
+        (async () => {
+            let res = await MongoApi.postCollection($('#database').val(), $("#newCollection").val());
+
+            if (typeof (res) == 'string' && res != "") {
+                showApiNotification(res, 'Сохранение', notificationEnum.error);
+                return;
+            }
+
+            await initCollectionList($('#database').val());
+        })();
+    });
+
+    $("#btnGetContent").click(function() {
+        (async () => {
+            let content = await MongoApi.getCollectionContent($('#database').val(), $("#collections").val(),
+                $("#costMin").val(), $("#costMax").val());
+
+            if (typeof (content) == 'string' && res != "") {
+                showApiNotification(res, 'Сохранение', notificationEnum.error);
+                return;
+            }
+
+            $("#collectionContent").val(JSON.stringify(content));
+        })();
+    });
+
+    $("#insertDoc").click(function() {
+        (async () => {
+            await MongoApi.postDoc($('#database').val(), $("#collections").val(), $("#comfortLevel").val());
+            if (typeof (content) == 'string' && res != "") {
+                showApiNotification(res, 'Сохранение', notificationEnum.error);
+            }
         })();
     });
 
@@ -618,24 +663,34 @@ function loatTemplateMongo(containerName) {
             dataTextField: 'name',
             dataValueField: "name",
             dataSource: db,
-            select: function(e) {
-                (async () => {
-                    let collections = await MongoApi.getDatabases($('#database').val());
-                    $('#collections').setDataSource(new kendo.data.DataSource({
-                        data: collections
-                    }));
-                })();
+            change: function(e) {
+                (async () => { await initCollectionList($('#database').val()); })();
             }
         });
-        let collections = $('#database').val() != ""
-            ? await MongoApi.getCollections($('#database').val()) : [];
         $('#collections').kendoComboBox({
             filter:"startswith",
             dataTextField: 'name',
             dataValueField: "name",
-            dataSource: collections
+            dataSource: []
         });
     })();
+
+    async function initDbList() {
+        let db = await MongoApi.getDatabases();
+        $('#database').data("kendoComboBox").setDataSource(new kendo.data.DataSource({
+            data: db
+        }));
+        $('#collections').data("kendoComboBox").setDataSource(new kendo.data.DataSource({
+            data: []
+        }));
+    };
+
+    async function initCollectionList(dbName) {
+        let collections = await MongoApi.getCollections(dbName);
+        $('#collections').data("kendoComboBox").setDataSource(new kendo.data.DataSource({
+            data: collections
+        }));
+    }
 
     $('[control-type="text-area"]').kendoTextArea({
         maxLength: 1000,
