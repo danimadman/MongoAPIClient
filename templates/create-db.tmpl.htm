@@ -1,0 +1,23 @@
+<script id="create-db-template" type="text/x-kendo-template">
+    <form>
+        <div class="create-db">
+            <section style="width: 100%;">
+                <label class="property-title">Строка подключения</label>
+                <input control-type="textbox" id="connectionString" value="mongodb://localhost:27017"
+                    placeholder="Введите строку подключения"/>
+
+                <label class="property-title">Базы данных</label>
+                <select control-type="combobox" id="database" placeholder="Выберите клиента"/>
+
+                <button type="button" class="btn btn-primary k-mr-2" id="btnNewDb">Создать бд</button>
+                <input control-type="textbox" id="newDatabase" placeholder="Введите название новой БД"/>
+
+                <label class="property-title">Коллекции</label>
+                <select control-type="combobox" id="collections" placeholder="Выберите клиента"/>
+
+                <button type="button" class="btn btn-primary k-mr-2" id="btnNewCollection">Создать коллекцию</button>
+                <input control-type="textbox" id="newCollection" placeholder="Введите название новой коллекции"/>
+            </section>
+        </div>
+    </form>
+</script>

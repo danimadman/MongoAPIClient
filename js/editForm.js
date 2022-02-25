@@ -9,6 +9,9 @@ async function loadEditForm(containerName, editFormName) {
         case Object.keys(editFormEnum)[2]:
             await RecordsService.loadTemplate(containerName);
             break;
+        default:
+            loatTemplateMongo(containerName);
+            break;
     }
 }
 
@@ -583,4 +586,60 @@ var RecordsService = {
 
 function getComfortLevelName(id) {
     return comfortLevelList?.find(x => x.id == id)?.name ?? "";
+}
+
+var connString = "mongodb://localhost:27017";
+
+function loatTemplateMongo(containerName) {
+    let template = kendo.template($(`#create-db-template`).html());
+
+    $(`#${containerName}`).html(template);
+    $(`#${containerName}`).show();
+
+    $('[control-type="textbox"]').kendoTextBox();
+
+    $('#connectionString').click(function () {
+        connString = $(this).val();
+        (async () => {
+            let db = await MongoApi.getDatabases();
+            $('#database').setDataSource(new kendo.data.DataSource({
+                data: db
+            }));
+            $('#collections').setDataSource(new kendo.data.DataSource({
+                data: []
+            }));
+        })();
+    });
+
+    (async () => {
+        let db = await MongoApi.getDatabases();
+        $('#database').kendoComboBox({
+            filter:"startswith",
+            dataTextField: 'name',
+            dataValueField: "name",
+            dataSource: db,
+            select: function(e) {
+                (async () => {
+                    let collections = await MongoApi.getDatabases($('#database').val());
+                    $('#collections').setDataSource(new kendo.data.DataSource({
+                        data: collections
+                    }));
+                })();
+            }
+        });
+        let collections = $('#database').val() != ""
+            ? await MongoApi.getCollections($('#database').val()) : [];
+        $('#collections').kendoComboBox({
+            filter:"startswith",
+            dataTextField: 'name',
+            dataValueField: "name",
+            dataSource: collections
+        });
+    })();
+
+    $('[control-type="text-area"]').kendoTextArea({
+        maxLength: 1000,
+        heigth: "100%",
+        rows: 5
+    });
 }

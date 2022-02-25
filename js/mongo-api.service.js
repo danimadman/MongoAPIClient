@@ -242,6 +242,24 @@ var MongoApi = {
             return e.responseJSON.message;
         }
     },
+    getDatabases: async function () {
+        try {
+            return await this.apiCallback('GET', `Mongo/GetDataBases/${connString}`, null, 0);
+        }
+        catch (e) {
+            console.log('Error: ', e);
+            return e.responseJSON.message;
+        }
+    },
+    getCollections: async function (dbName) {
+        try {
+            return await this.apiCallback('GET', `Mongo/GetCollections/${connString}/${dbName}`, null, 0);
+        }
+        catch (e) {
+            console.log('Error: ', e);
+            return e.responseJSON.message;
+        }
+    },
     apiCallback: async function (type, method, data, useAuth = 0) {
         if (useAuth == 1)
             await this.getToken();

@@ -28,6 +28,7 @@
                 <button type="button" class="btn btn-secondary" data-role="open-edit-form" data-template="hostel-room">Номера отелей</button>
                 <button type="button" class="btn btn-secondary k-ml-2" data-role="open-edit-form" data-template="clients">Клиенты</button>
                 <button type="button" class="btn btn-secondary k-ml-2" data-role="open-edit-form" data-template="records">Записи</button>
+                <button type="button" class="btn btn-secondary k-ml-2" data-role="open-edit-form" data-template="create-db">Создание баз данных</button>
             </section>
             <section id="edit-form" class="work-container" style="display: none;"></section>
         </div>
@@ -109,6 +110,7 @@
                 templateLoader.loadExtTemplate(layouts + "/templates/hostel-room.tmpl.htm");
                 templateLoader.loadExtTemplate(layouts + "/templates/records.tmpl.htm");
                 templateLoader.loadExtTemplate(layouts + "/templates/record-details.tmpl.htm");
+                templateLoader.loadExtTemplate(layouts + "/templates/create-db.tmpl.htm");
 
                 setTimeout(init, 1);
             });
